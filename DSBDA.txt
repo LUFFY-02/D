@@ -1,0 +1,719 @@
+--------------------------------------------------------------------------------------------------------------------------------------
+// Assignment 1  : Data Wrangling 1
+import pandas as pd
+df = pd.read_csv('data.csv')
+cf = df["Calories"]
+df = pd.concat([df,cf], axis=1)
+df.head()
+df.tail()
+df.isnull()
+df["Pulse"].info()
+df.describe()
+df.dtypes
+df['Calories'] = df['Calories'].astype('float32')
+df.dtypes
+df.dropna(inplace = True)
+print(df.to_string())
+df.shape
+df['Duration'].replace([60, 45, 75, 20], [0, 1, 2, 3], inplace =True)
+df.duplicated()
+ 
+is_null :   tell if the value is null
+ 
+astype  :   change the type of the column
+ 
+dropna  :   deletes the rows with null values dataframe.dropna(axis, how, thresh, subset, inplace)
+ 
+dataframe.replace(to_replace, value, inplace, limit, regex(replace with an regular expression(takes true or false)), method)
+ 
+dataframe.duplicated(subset, keep)  returns list 
+ 
+df_gender = pd.get_dummies(df['gender'])
+ 
+df_new = pd.concat([df, df_gender], axis=1)
+print(df_new)
+For normalization Using 1. The min-max feature scaling  (col - colmin) / (colmax - colmin )
+--------------------------------------------------------------------------------------------------------------------------------------
+// Assignment 2  : Data Wrangling 2
+import pandas as pd
+df = pd.read_csv('st.csv')
+cf = pd.get_dummies(df['gender'])
+df = pd.concat([df,cf],axis=1)
+df = df.drop("gender", axis=1)  
+df.head()
+df.tail()
+df.describe()
+df.dtypes
+df['math score'] = df['math score'].astype("float32")
+df['reading score'] = df['reading score'].astype("float32")
+df['writing score'] = df['writing score'].astype("float32")
+df.dtypes
+df.shape
+df
+lst = []
+for i in range(df.shape[0]):
+    if (df['test preparation course'][i] == 'none'):
+        lst.append(i)
+print("Student with missing preparation course are at indices : ")
+for i in range(len(lst)):
+    print(lst[i])
+print()
+for i in range(df.shape[0]):
+    df['math score'][i] = df['math score'][i]/10
+    df['reading score'][i] = df['reading score'][i]/10
+    df['writing score'][i] = df['writing score'][i]/10
+df
+--------------------------------------------------------------------------------------------------------------------------------------
+// Assignment 3  : Data Wrangling 3
+import pandas as pd
+df = pd.read_csv('Iris.csv')
+df.head()
+df.dtypes
+df.describe()
+df['Species'].unique()
+group = df.groupby('Species')
+iris_setosa = group.get_group('Iris-setosa')
+iris_versicolor = group.get_group('Iris-versicolor')
+iris_virginica = group.get_group('Iris-virginica')
+print(iris_setosa)
+iris_setosa.head()
+iris_setosa.describe()
+iris_versicolor.head()
+iris_versicolor.describe()
+iris_virginica.head()
+iris_virginica.describe()
+group[["SepalLengthCm","SepalWidthCm", "PetalLengthCm", "PetalWidthCm"]].min()
+df.groupby('Species')[["SepalLengthCm","SepalWidthCm", "PetalLengthCm", "PetalWidthCm"]].median()
+df.groupby('Species')[["SepalLengthCm","SepalWidthCm", "PetalLengthCm", "PetalWidthCm"]].std()
+--------------------------------------------------------------------------------------------------------------------------------------
+// Assignment 4  : Descriptive Statistics
+import pandas as pd
+import numpy as np
+df=pd.read_csv("Housing.csv")
+df=df.dropna()
+df.head()
+Here we seperate the first 13 columns in X and the last column to be predicted as Y.
+X = df[['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD', 'TAX',
+       'PTRATIO', 'B', 'LSTAT']]
+Y = df['MEDV']
+# X=X.dropna()
+Splitting the data into training and testing data using train_test_split
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X,Y, test_size = 0.3, random_state = 42)
+Standardizing the data
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.fit_transform(X_test)
+Importing and loading the Linear Regression model on the data.
+from sklearn.linear_model import LinearRegression
+lr = LinearRegression()
+lr.fit(X_train, y_train)
+y_pred = lr.predict(X_test)
+Printing our predicted values
+print(y_pred)
+from sklearn.metrics import mean_squared_error
+rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+print("Root Mead squared Error is:")
+print(rmse)
+print("Training accuracy is:")
+lr.score(X_train, y_train)
+print("Testing accuracy is:")
+lr.score(X_test, y_test)
+--------------------------------------------------------------------------------------------------------------------------------------
+// Assignment 5  : Data Analysis 1
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix,accuracy_score, classification_report
+df=pd.read_csv("social_network_ads.csv")
+df.head()
+X = df.iloc[:,[2,3]].values
+print(X)
+Y = df.iloc[:,4].values
+print(Y)
+Split the data into Train set and Test data
+X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size = 0.25, random_state = 0)
+print("Training and testing split was successful.")
+basemodel= LogisticRegression()
+basemodel.fit(X_train,y_train)
+print("Training accuracy:", basemodel.score(X_train,y_train)*100)
+y_predict= basemodel.predict(X_test)
+print("Testing accuracy:", basemodel.score(X_test,y_test)*100)
+Normalize the data using Min Max Normalization or any other technique
+from sklearn.preprocessing import MinMaxScaler
+scaler=MinMaxScaler()
+ 
+X=df[['Age','EstimatedSalary']]
+X_scaled= scaler.fit_transform(X)
+ 
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, Y, test_size=0.2, random_state = 42)
+print("Training and testing split was successful.")
+model= LogisticRegression()
+model.fit(X_train,y_train)
+y_predict= model.predict(X_test)
+print("Training accuracy:", model.score(X_train,y_train)*100)
+print("Testing accuracy:", model.score(X_test,y_test)*100)
+cm= confusion_matrix(y_test,y_predict)
+print(cm)
+Acc=accuracy_score(y_test,y_predict)
+print(Acc)
+from sklearn.metrics import precision_recall_fscore_support
+prf= precision_recall_fscore_support(y_test,y_predict)
+print('precision:',prf[0])
+print('Recall:',prf[1])
+print('fscore:',prf[2])
+print('support:',prf[3])
+print('                        classification report:')
+print('')
+print(classification_report(y_test,y_predict))
+--------------------------------------------------------------------------------------------------------------------------------------
+// Assignment 6  : Data Analysis 2
+import pandas as pd
+import matplotlib.pyplot as plt
+df=pd.read_csv("Iris.csv")
+df.shape
+df.head()
+df.tail()
+df.isnull().sum()
+df.dtypes
+df.info()
+df.describe()
+Defining X and y for the model
+X = df.iloc[:,1:5]
+y = df.iloc[:,-1]
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=True)
+from sklearn.naive_bayes import GaussianNB
+model = GaussianNB()
+model.fit(X_train, y_train)
+y_pred= model.predict(X_test) #now predicting our model to our test dataset
+ 
+ 
+print(y)
+print(y_pred)
+ 
+model.score(X_test,y_test)
+from sklearn.metrics import accuracy_score
+accuracy_score = accuracy_score(y_test, y_pred)*100
+print('Accuracy Score:')
+print (accuracy_score)
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(y_test,y_pred)
+print('Confusion Matrix: ')
+print(cm)
+def get_confusion_matrix_values(y_true, y_pred):
+    cm = confusion_matrix(y_true, y_pred)
+    return(cm[0][0], cm[0][1], cm[1][0], cm[1][1])
+ 
+TP, FP, FN, TN = get_confusion_matrix_values(y_test, y_pred)
+print("TP: ", TP)
+print("FP: ", FP)
+print("FN: ", FN)
+print("TN: ", TN)
+--------------------------------------------------------------------------------------------------------------------------------------
+// Assignment 7  : Data Analysis 3
+import nltk
+#https://towardsdatascience.com/intro-to-nltk-for-nlp-with-python-87da6670dde
+# nltk.download('all')
+from nltk import word_tokenize, sent_tokenize
+sent = "GeeksforGeeks is a great learning platform.\
+It is one of the best for Computer Science students."
+print(word_tokenize(sent))
+print(sent_tokenize(sent))
+Stemming
+from nltk.stem import PorterStemmer
+ 
+# create an object of class PorterStemmer
+porter = PorterStemmer()
+print(porter.stem("play"))
+print(porter.stem("playing"))
+print(porter.stem("plays"))
+print(porter.stem("played"))
+from nltk.stem import PorterStemmer
+# create an object of class PorterStemmer
+porter = PorterStemmer()
+print(porter.stem("Communication"))
+from nltk.stem import WordNetLemmatizer
+# create an object of class WordNetLemmatizer
+lemmatizer = WordNetLemmatizer()
+print(lemmatizer.lemmatize("plays", 'v'))
+print(lemmatizer.lemmatize("played", 'v'))
+print(lemmatizer.lemmatize("play", 'v'))
+print(lemmatizer.lemmatize("playing", 'v'))
+from nltk.stem import WordNetLemmatizer
+ 
+# create an object of class WordNetLemmatizer
+lemmatizer = WordNetLemmatizer()
+print(lemmatizer.lemmatize("Communication", 'v'))
+from nltk import pos_tag
+from nltk import word_tokenize
+ 
+text = "GeeksforGeeks is a Computer Science platform."
+tokenized_text = word_tokenize(text)
+tags = tokens_tag = pos_tag(tokenized_text)
+print(tags)
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+ 
+example_sent = """This is a sample sentence,
+				showing off the stop words filtration."""
+ 
+stop_words = set(stopwords.words('english'))
+ 
+word_tokens = word_tokenize(example_sent)
+ 
+filtered_sentence = [w for w in word_tokens if not w.lower() in stop_words]
+ 
+filtered_sentence = []
+ 
+for w in word_tokens:
+	if w not in stop_words:
+		filtered_sentence.append(w)
+ 
+print(word_tokens)
+print(filtered_sentence)
+ 
+# import required module
+from sklearn.feature_extraction.text import TfidfVectorizer
+ 
+# assign documents
+d0 = 'hello'
+d1 = 'hi baby'
+d2 = 'how are you'
+ 
+# merge documents into a single corpus
+string = [d0, d1, d2]
+ 
+# create object
+tfidf = TfidfVectorizer()
+ 
+# get tf-df values
+result = tfidf.fit_transform(string)
+ 
+# get idf values
+print('\nidf values:')
+for ele1, ele2 in zip(tfidf.get_feature_names_out(),tfidf.idf_):
+	print(ele1, ':', ele2)
+ 
+# get indexing
+print('\nWord indexes:')
+print(tfidf.vocabulary_)
+ 
+# display tf-idf values
+print('\ntf-idf value:')
+print(result)
+ 
+# in matrix form
+print('\ntf-idf values in matrix form:')
+print(result.toarray())
+--------------------------------------------------------------------------------------------------------------------------------------
+// Assignment 8  : Text Analysis
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+df = pd.read_csv("titanic_dataset.csv")
+df
+df.info()
+df.dtypes
+df.describe()
+df.isnull().sum()
+df1 = df.dropna()
+df1
+df1.isnull().sum()
+sns.histplot(x='fare',data=titanic)
+plt.show()  //sns.set(rc={'figure.figsize':(5,5)})
+sns.displot(x='age',data=titanic,bins=70)
+sns.set(rc={'figure.figsize':(5,5)})
+sns.countplot(x ='Pclass', data = df1)
+sns.catplot(x='survived', data=titanic, kind='count', hue='pclass')
+sns.set(rc={'figure.figsize':(5,5)})
+sns.factorplot('survived',data=titanic,kind='count',hue='sex')
+sns.set(rc={'figure.figsize':(5,5)})
+sns.boxplot(x ='Age', data = df1)
+sns.histplot(x = df1['Fare'], kde=True)
+--------------------------------------------------------------------------------------------------------------------------------------
+// Assignment 9  : Data Visualization 1
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+df = pd.read_csv("titanic_dataset.csv")
+df
+df.describe()
+df.isnull().sum()
+df1 = df.dropna()
+df1
+df1.isnull().sum()
+sns.boxplot(x ='Age', data = df1)
+plt.show()
+sns.countplot(x ='Sex', data = df1)
+plt.show()
+sns.countplot(x ='Survived', data = df1)
+plt.show()
+sns.boxplot(x = 'Sex', y = 'Age', data = df1).set_title('Plot for distribution of age with respect to each gender')
+sns.boxplot(x = df1['Sex'], y = df1['Age'], hue=df1['Survived'], palette = 'Set2').set_title('Plot for distribution of age with respect to each gender along with the information about whether they survived or not')
+ 
+--------------------------------------------------------------------------------------------------------------------------------------
+// Assignment 10 : Data Visualization 2
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+ 
+df = pd.read_csv("Iris.csv")
+df
+df.info()
+df.dtypes
+df.isnull().sum()
+df.describe()
+Histogram for each feature in the dataset to illustrate the feature distributions.
+sns.histplot(y = df['SepalLengthCm'], x = df['Species'])
+sns.histplot(x = df['SepalWidthCm'])
+sns.histplot(x = df['PetalLengthCm'])
+sns.histplot(x = df['PetalWidthCm'])
+sns.catplot(x ="Species", hue ="SepalLengthCm", kind ="count", data = df)
+Boxplot for each feature in the dataset.
+sns.boxplot(df['SepalLengthCm'])
+sns.boxplot(df['SepalWidthCm'])
+sns.boxplot(df['PetalLengthCm'])
+sns.boxplot(df['PetalWidthCm'])
+Compare distributions and identify outliers.
+Q1=df['SepalWidthCm'].quantile(0.25)
+Q3=df['SepalWidthCm'].quantile(0.75)
+Q1,Q3
+IQR=Q3-Q1
+ 
+lower_limit=Q1-1.5*IQR
+upper_limit=Q3+1.5*IQR
+ 
+df[(df['SepalWidthCm']<lower_limit)|(df['SepalWidthCm']>upper_limit)]
+df1=df[(df['SepalWidthCm']>lower_limit)&(df['SepalWidthCm']<upper_limit)]
+df1
+sns.boxplot(df1['SepalWidthCm'])
+--------------------------------------------------------------------------------------------------------------------------------------
+// Assignment 11 : Hadoop MapReduce 
+import java.io.IOException;
+import java.util.StringTokenizer;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+public class WordCount {
+
+  public static class TokenizerMapper
+       extends Mapper<Object, Text, Text, IntWritable>{
+
+    private final static IntWritable one = new IntWritable(1);
+    private Text word = new Text();
+
+    public void map(Object key, Text value, Context context
+                    ) throws IOException, InterruptedException {
+      StringTokenizer itr = new StringTokenizer(value.toString());
+      while (itr.hasMoreTokens()) {
+        word.set(itr.nextToken());
+        context.write(word, one);
+      }
+    }
+  }
+
+  public static class IntSumReducer
+       extends Reducer<Text,IntWritable,Text,IntWritable> {
+    private IntWritable result = new IntWritable();
+
+    public void reduce(Text key, Iterable<IntWritable> values,
+                       Context context
+                       ) throws IOException, InterruptedException {
+      int sum = 0;
+      for (IntWritable val : values) {
+        sum += val.get();
+      }
+      result.set(sum);
+      context.write(key, result);
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    Configuration conf = new Configuration();
+    Job job = Job.getInstance(conf, "word count");
+    job.setJarByClass(WordCount.class);
+    job.setMapperClass(TokenizerMapper.class);
+    job.setCombinerClass(IntSumReducer.class);
+    job.setReducerClass(IntSumReducer.class);
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(IntWritable.class);
+    FileInputFormat.addInputPath(job, new Path(args[0]));
+    FileOutputFormat.setOutputPath(job, new Path(args[1]));
+    System.exit(job.waitForCompletion(true) ? 0 : 1);
+  }
+}
+
+********************
+$ bin/hadoop com.sun.tools.javac.Main WordCount.java
+$ jar cf wc.jar WordCount*.class
+**
+$ bin/hadoop jar wc.jar WordCount /user/joe/wordcount/input /user/joe/wordcount/output
+**
+$ bin/hadoop fs -cat /user/joe/wordcount/output/part-r-00000
+--------------------------------------------------------------------------------------------------------------------------------------
+// Assignment 12 : Hadoop MapReduce on log file
+--------------------------------------------------------------------------------------------------------------------------------------
+// Assignment 13 : Weather analysis
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.FileInputFormat;
+import org.apache.hadoop.mapred.FileOutputFormat;
+import org.apache.hadoop.mapred.JobClient;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.KeyValueTextInputFormat;
+import org.apache.hadoop.mapred.MapReduceBase;
+import org.apache.hadoop.mapred.Mapper;
+import org.apache.hadoop.mapred.OutputCollector;
+import org.apache.hadoop.mapred.Reducer;
+import org.apache.hadoop.mapred.Reporter;
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
+public class Weather extends Configured implements Tool {
+	final long DEFAULT_SPLIT_SIZE = 128 * 1024 * 1024;
+	public static class MapClass extends MapReduceBase
+			implements Mapper<LongWritable, Text, Text, Text> {
+		private Text word = new Text();
+		private Text values = new Text();
+		public void map(LongWritable key, Text value,
+						OutputCollector<Text, Text> output,
+						Reporter reporter) throws IOException {
+			String line = value.toString();
+			StringTokenizer itr = new StringTokenizer(line);
+			int counter = 0;
+			String key_out = null;
+			String value_str = null;
+			boolean skip = false;
+			loop:while (itr.hasMoreTokens() && counter<13) {
+				String str = itr.nextToken();
+				switch (counter) {
+				case 0:
+					key_out = str;
+					if(str.contains("STN")){//Ignoring rows where station id is all 9
+						skip = true;
+						break loop;
+					}else{
+						break;
+					}
+				case 2:
+					int hour = Integer.valueOf(str.substring(str.lastIndexOf("_")+1, str.length()));
+					str = str.substring(4,str.lastIndexOf("_")-2);
+					/*if(hour<=5){
+						str = str.concat("_section4");
+					}else if(hour>5 && hour<=11){
+						str = str.concat("_section1");
+					}else if(hour>11 && hour<=17){
+						str = str.concat("_section2");
+					}else if(hour>17 && hour<=23){
+						str = str.concat("_section3");
+					}*/
+					
+					if(hour>4 && hour<=10){
+						str = str.concat("_section1");
+					}else if(hour>10 && hour<=16){
+						str = str.concat("_section2");
+					}else if(hour>16 && hour<=22){
+						str = str.concat("_section3");
+					}else{
+						str = str.concat("_section4");
+					}
+					
+					
+					key_out = key_out.concat("_").concat(str);
+					break;
+				case 3://Temperature
+					if(str.equals("9999.9")){//Ignoring rows where temperature is all 9
+						skip = true;
+						break loop;
+					}else{
+						value_str = str.concat(" ");
+						break;
+					}
+				case 4://Dew point
+					if(str.equals("9999.9")){//Ignoring rows where dew point is all 9
+						skip = true;
+						break loop;
+					}else{
+						value_str = value_str.concat(str).concat(" ");
+						break;
+					}
+				case 12://Wind speed
+					if(str.equals("999.9")){//Ignoring rows where wind speed is all 9
+						skip = true;
+						break loop;
+					}else{
+						value_str = value_str.concat(str).concat(" ");
+						break;
+					}
+				default:
+					break;
+				}
+				counter++;
+			}
+			if(!skip){
+				word.set(key_out);
+				values.set(value_str);
+				output.collect(word, values);
+			}
+		}
+	}
+	public static class MapClassForJob2 extends MapReduceBase
+			implements Mapper<Text, Text, Text, Text> {
+		private Text key_text = new Text();
+		private Text value_text = new Text();
+		@Override
+		public void map(Text key, Text value,
+				OutputCollector<Text, Text> output, Reporter reporter) throws IOException {
+			String str = key.toString();
+			String station = str.substring(str.lastIndexOf("_")+1, str.length());
+			str = str.substring(0,str.lastIndexOf("_"));
+			key_text.set(str);
+			StringTokenizer itr = new StringTokenizer(value.toString());
+			String str_out = station.concat("<");
+			while (itr.hasMoreTokens()) {
+				String nextToken = itr.nextToken(" ");
+				str_out = str_out.concat(nextToken);
+				str_out = ((itr.hasMoreTokens()) ? str_out.concat(",") : str_out.concat(">"));
+			}
+			value_text.set(str_out);
+			output.collect(key_text,value_text);
+		}
+	}	
+	public static class Reduce extends MapReduceBase
+			implements Reducer<Text, Text, Text, Text> {
+		private Text value_out_text = new Text();
+		public void reduce(Text key, Iterator<Text> values,
+				OutputCollector<Text, Text> output, Reporter reporter) throws IOException {
+			double sum_temp = 0;
+			double sum_dew = 0;
+			double sum_wind = 0;
+			int count = 0;
+			while (values.hasNext()) {
+				String str = values.next().toString();
+				StringTokenizer itr = new StringTokenizer(str);
+				int count_vector = 0;
+				while (itr.hasMoreTokens()) {
+					String nextToken = itr.nextToken(" ");
+					if(count_vector==0){
+						sum_temp += Double.valueOf(nextToken);
+					}
+					if(count_vector==1){
+						sum_dew += Double.valueOf(nextToken);
+					}
+					if(count_vector==2){
+						sum_wind += Double.valueOf(nextToken);
+					}
+					count_vector++;
+				}
+				count++;
+			}
+			double avg_tmp = sum_temp / count;
+			double avg_dew = sum_dew / count;
+			double avg_wind = sum_wind / count;			
+			System.out.println(key.toString()+" count is "+count+" sum of temp is "+sum_temp+" sum of dew is "+sum_dew+" sum of wind is "+sum_wind+"\n");
+			String value_out = String.valueOf(avg_tmp).concat(" ").concat(String.valueOf(avg_dew)).concat(" ").concat(String.valueOf(avg_wind));
+			value_out_text.set(value_out);
+			output.collect(key, value_out_text);
+		}
+	}
+	public static class ReduceForJob2 extends MapReduceBase
+			implements Reducer<Text, Text, Text, Text> {
+		private Text value_out_text = new Text();
+		public void reduce(Text key, Iterator<Text> values,
+				OutputCollector<Text, Text> output, Reporter reporter) throws IOException {
+			String value_out = "";
+			while (values.hasNext()) {
+				value_out = value_out.concat(values.next().toString()).concat(" ");
+			}
+			value_out_text.set(value_out);
+			output.collect(key, value_out_text);
+		}
+	}
+	static int printUsage() {
+		System.out.println("weather [-m <maps>] [-r <reduces>] <job_1 input> <job_1 output> <job_2 output>");
+		ToolRunner.printGenericCommandUsage(System.out);
+		return -1;
+	}
+	public int run(String[] args) throws Exception {
+		Configuration config = getConf();		
+		/*config.setLong(
+		    FileInputFormat.SPLIT_MAXSIZE,
+		    config.getLong(
+		        FileInputFormat.SPLIT_MAXSIZE, DEFAULT_SPLIT_SIZE) / 2);*/
+		JobConf conf = new JobConf(config, Weather.class);
+		conf.setJobName("Weather Job1");
+		conf.setOutputKeyClass(Text.class);
+		conf.setOutputValueClass(Text.class);
+		conf.setMapOutputKeyClass(Text.class);
+		conf.setMapOutputValueClass(Text.class);
+		conf.setMapperClass(MapClass.class);
+		conf.setReducerClass(Reduce.class);
+		List<String> other_args = new ArrayList<String>();
+		for(int i=0; i < args.length; ++i) {
+			try {
+				if ("-m".equals(args[i])) {
+					conf.setNumMapTasks(Integer.parseInt(args[++i]));
+				} else if ("-r".equals(args[i])) {
+					conf.setNumReduceTasks(Integer.parseInt(args[++i]));
+				} else {
+					other_args.add(args[i]);
+				}
+			} catch (NumberFormatException except) {
+				System.out.println("ERROR: Integer expected instead of " + args[i]);
+				return printUsage();
+			} catch (ArrayIndexOutOfBoundsException except) {
+				System.out.println("ERROR: Required parameter missing from " +
+						args[i-1]);
+				return printUsage();
+			}
+		}
+		/*if (other_args.size() != 3) {
+			System.out.println("ERROR: Wrong number of parameters: " +
+					other_args.size() + " instead of 3.");
+			return printUsage();
+		}*/
+		FileInputFormat.setInputPaths(conf, other_args.get(0));
+		FileOutputFormat.setOutputPath(conf, new Path(other_args.get(1)));
+		JobClient.runJob(conf);
+		JobConf conf2 = new JobConf(config, Weather.class);
+		conf2.setJobName("Weather Job 2");
+		conf2.setOutputKeyClass(Text.class);
+		conf2.setOutputValueClass(Text.class);
+		conf2.setInputFormat(KeyValueTextInputFormat.class);
+		conf2.setMapOutputKeyClass(Text.class);
+		conf2.setMapOutputValueClass(Text.class);
+		conf2.setMapperClass(MapClassForJob2.class);
+		conf2.setReducerClass(ReduceForJob2.class);		
+		FileInputFormat.setInputPaths(conf2, new Path(other_args.get(1)));
+		FileOutputFormat.setOutputPath(conf2, new Path(other_args.get(2)));
+		JobClient.runJob(conf2);
+		return 0;
+	}
+	public static void main(String[] args) throws Exception {
+		int res = ToolRunner.run(new Configuration(), new Weather(), args);
+		System.exit(res);
+	}
+
+}
